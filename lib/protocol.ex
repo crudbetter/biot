@@ -47,7 +47,7 @@ defmodule Biot.ProtocolHandler do
 
   def handle_event(
         {:call, from},
-        <<3::integer-size(8), timestamp::integer-size(64), value::integer-size(16)>>,
+        <<3::integer-size(8), timestamp::integer-size(64), value::integer-size(64)>>,
         :connected,
         data = %{how_many: how_many, vdevice: vdevice}
       ) do

@@ -14,7 +14,7 @@ defmodule Biot.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :httpotion],
       mod: {Biot, []}
     ]
   end
@@ -22,7 +22,8 @@ defmodule Biot.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:gen_state_machine, "~> 2.0.4"}
+      {:gen_state_machine, "~> 2.0.4"},
+      {:httpotion, "~> 3.1.0"}
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
   end

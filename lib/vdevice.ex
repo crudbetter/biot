@@ -8,28 +8,35 @@ defmodule Biot.VDevice do
   end
 
   def start_link(vdevice_id) do
-    GenServer.start_link(Mod, [], name: {:via, Registry, {Registry.Via, {Mod, vdevice_id}}})
+    GenServer.start_link(Mod, {vdevice_id, []}, name: {:via, Registry, {Registry.Via, {Mod, vdevice_id}}})
   end
 
   def push(vdevice, head) do
     GenServer.cast(vdevice, {:push, head})
   end
 
-  def pop(vdevice) do
-    GenServer.call(vdevice, :pop)
-  end
-
   ## Callbacks
 
-  def init(stack) do
-    {:ok, stack}
+  def init({vdevice_id, buffer}) do
+    Process.send_after(self(), :flush, 10_000)
+
+    {:ok, %{vdevice_id: vdevice_id, buffer: buffer}}
   end
 
-  def handle_call(:pop, _from, [head | tail]) do
-    {:reply, head, tail}
+  def handle_info(:flush, state) do
+    URI.encode("http://127.0.0.1:8086/write?db=biot&precision=ms")
+    |> HTTPotion.post([body: construct_line_protocol(state)])
+
+    Process.send_after(self(), :flush, 10_000)
+
+    {:noreply, %{state | buffer: []}}
   end
 
-  def handle_cast({:push, head}, tail) do
-    {:noreply, [head | tail]}
+  def handle_cast({:push, head}, state = %{buffer: tail}) do
+    {:noreply, %{state | buffer: [:math.sin(head) | tail]}}
+  end
+
+  defp construct_line_protocol(%{vdevice_id: vdevice_id, buffer: buffer}) do
+    Enum.reduce(buffer, "", fn ([ts, v], acc) -> acc <> ~s(signal,vdevice_id=#{vdevice_id} sample=#{v} #{ts}\n) end)
   end
 end
