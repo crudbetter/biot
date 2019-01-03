@@ -8,7 +8,9 @@ defmodule Biot.VDevice do
   end
 
   def start_link(vdevice_id) do
-    GenServer.start_link(Mod, {vdevice_id, []}, name: {:via, Registry, {Registry.Via, {Mod, vdevice_id}}})
+    GenServer.start_link(Mod, {vdevice_id, []},
+      name: {:via, Registry, {Registry.Via, {Mod, vdevice_id}}}
+    )
   end
 
   def push(vdevice, head) do
@@ -25,7 +27,7 @@ defmodule Biot.VDevice do
 
   def handle_info(:flush, state) do
     URI.encode("http://127.0.0.1:8086/write?db=biot&precision=ms")
-    |> HTTPotion.post([body: construct_line_protocol(state)])
+    |> HTTPotion.post(body: construct_line_protocol(state))
 
     Process.send_after(self(), :flush, 10_000)
 
@@ -33,10 +35,14 @@ defmodule Biot.VDevice do
   end
 
   def handle_cast({:push, head}, state = %{buffer: tail}) do
-    {:noreply, %{state | buffer: [:math.sin(head) | tail]}}
+    {:noreply, %{state | buffer: [head | tail]}}
   end
 
   defp construct_line_protocol(%{vdevice_id: vdevice_id, buffer: buffer}) do
-    Enum.reduce(buffer, "", fn ([ts, v], acc) -> acc <> ~s(signal,vdevice_id=#{vdevice_id} sample=#{v} #{ts}\n) end)
+    Enum.reduce(buffer, "", fn [ts, v], acc ->
+      acc <>
+        ~s(signal_raw,vdevice_id=#{vdevice_id} sample=#{v} #{ts}\n) <>
+        ~s(signal_cal,vdevice_id=#{vdevice_id} sample=#{:math.sin(v)} #{ts}\n)
+    end)
   end
 end

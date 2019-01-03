@@ -26,7 +26,7 @@ defmodule Biot.Gateway do
         spec = %{
           id: Biot.ProtocolHandler,
           start: {Biot.ProtocolHandler, :start_link, [acceptSocket]},
-          restart: :transient
+          restart: :temporary
         }
 
         {:ok, handler} = DynamicSupervisor.start_child(Biot.ProtocolHandlers, spec)
