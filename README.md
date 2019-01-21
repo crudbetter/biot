@@ -1,20 +1,12 @@
 # Biot
 
-**TODO: Add description**
+Biot (Beam IoT) is a simplified ingestion platform for sensor data. It was built to help demonstrate the benefits of Erlang for IoT, in a presentation to a local meetup (https://www.thingsconnected.net/bournemouth-iot-challenge/).
 
-## Installation
+Biot has the following featues:
+- a custom communications protocol, delivered via TCP, between device and platform (the protocol is rather inefficient, sending 1 sample per TCP message). 
+- new TCP connections are always accepted.
+- device communicates as quickly as possible, platform throttles rate of communication.
+- device transfers data in raw ADC (analogue to digital converter) counts, platform performs calibration.
+- virtual devices are isolated from one another.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `biot` to your list of dependencies in `mix.exs`:
 
-```elixir
-def deps do
-  [
-    {:biot, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/biot](https://hexdocs.pm/biot).
