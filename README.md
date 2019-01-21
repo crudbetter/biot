@@ -9,4 +9,8 @@ Biot has the following featues:
 - device transfers data in raw ADC (analogue to digital converter) counts, platform performs calibration.
 - virtual devices are isolated from one another.
 
+## Protocol sequence diagram
+![](protocol.svg)
 
+## OTP design
+![](otp_design.png)
